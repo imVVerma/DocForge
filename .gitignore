@@ -1,0 +1,16 @@
+backend/.venv/
+backend/__pycache__/
+backend/.ruff_cache/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.env
+backend/*.pyc
+backend/.tmp/
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env
+
+.DS_Store
+Thumbs.db

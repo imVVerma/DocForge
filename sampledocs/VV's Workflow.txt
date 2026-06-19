@@ -1,0 +1,384 @@
+
+1. Landing Page
+
+Purpose Entry point for both admin and interviewer.
+
+Buttons
+
+Admin Gateway → /admin_login
+
+Interviewer Portal → /interview_login
+
+
+No backend logic required here.
+
+
+---
+
+2. Admin Login Page (/admin_login)
+
+Task
+
+Implement OAuth authentication.
+
+Example flow:
+
+1. Admin clicks Login with Google / OAuth provider
+
+
+2. OAuth validates the user
+
+
+3. Backend checks if the email exists in admins table
+
+
+4. If valid → redirect
+
+
+
+Redirection
+
+/admin_login → /generated_reports
+
+
+---
+
+3. Generated Reports Page (/generated_reports)
+
+This is the main admin control screen.
+
+3.1 Display Existing Reports
+
+When admin logs in:
+
+Query:
+
+SELECT * 
+FROM reports
+ORDER BY created_at DESC
+LIMIT 6
+
+Display top 6 rows as cards.
+
+
+---
+
+3.2 What Data Appears on Each Card
+
+Important:
+This comes from the report JSON, not from canonical JSON.
+
+Example structure from:
+
+reports/test_student_report.json
+
+Typical card elements could be:
+
+Student Name
+Program
+Assigned Interviewer 
+Example card:
+
+Name: Rahul Sharma
+Program: Data Science
+Assigned Interviewer : Mr. Raj Singh
+
+---
+
+4. Upload Button → /admin_upload
+
+Clicking Upload redirects to:
+
+/admin_upload
+
+Purpose: Upload student PDFs.
+
+
+---
+
+5. Upload + Generate Process
+
+Step 1 Upload PDF
+
+Admin uploads student file.
+
+Backend:
+
+store PDF
+extract text
+
+
+---
+
+Step 2 Generate Button
+
+Clicking Generate triggers two parallel processes.
+
+Process A (Structured Data)
+
+Generate Canonical JSON
+
+Used for:
+
+Screen 1
+Screen 2
+
+Example:
+
+Screen 1 - Academics, Activities 
+skills
+projects
+
+
+---
+
+Process B (LLM Analysis)
+
+LLM generates insights for:
+
+Screen 3
+Screen 4
+
+Example:
+
+strength analysis
+personality inference
+risk indicators
+suggested interview questions
+
+
+---
+
+Final Output Stored
+
+reports table
+
+Fields:
+
+report_id
+student_name
+canonical_json
+llm_report_json
+status
+assigned_interviewer
+created_at
+
+
+---
+
+6. After Processing
+
+Once report generation finishes:
+
+Update DB row.
+
+Then refresh Generated Reports page cards.
+
+New report appears at top.
+
+
+---
+
+7. Back Button
+
+When admin clicks Home button from questions guide screen:
+
+/questions_guide → /generated_reports
+
+No state loss required.
+
+Just reload cards.
+
+
+---
+
+8. View Generated Report
+
+Clicking View Report on a card:
+
+/generated_reports → /dashboard
+
+Admin navigates through:
+
+Screen 1
+Screen 2
+Screen 3
+Screen 4
+Suggested Questions
+
+All content pulled from:
+
+canonical_json
+llm_report_json
+
+
+---
+
+9. Assign Interviewer
+
+On Generated Reports page each card contains:
+
+Select Interviewer ▼
+
+Dropdown pulls from:
+
+interviewers table
+
+Example:
+
+SELECT name,id FROM interviewers
+
+Admin selects interviewer → clicks Confirm
+
+
+---
+
+Database Update
+
+UPDATE reports
+SET assigned_interviewer = interviewer_id
+WHERE report_id = X
+
+Now the report is linked to interviewer.
+
+
+---
+
+10. Interviewer Side Flow
+
+Landing page → Interviewer login.
+
+/interview_login
+
+After login:
+
+/interview_dashboard
+
+
+---
+
+What Interviewer Sees
+
+Query:
+
+SELECT *
+FROM reports
+WHERE assigned_interviewer = interviewer_id
+
+Cards appear only for assigned reports.
+
+Each card contains:
+
+Student Name
+Summary
+Interview Status
+View Report
+
+
+---
+
+11. Logout
+
+Logout button available on:
+
+Generated Reports Page
+
+Action:
+
+destroy session
+redirect → /
+
+Back to landing page.
+
+
+---
+
+12. Full System Flow
+
+Landing Page
+      │
+      ├── Admin Gateway
+      │        ↓
+      │   Admin Login (OAuth)
+      │        ↓
+      │   Generated Reports
+      │        │
+      │        ├── Upload PDF → /admin_upload
+      │        │         ↓
+      │        │      Generate
+      │        │         ↓
+      │        │   Canonical JSON (screen1,2)
+      │        │   LLM Report JSON (screen3,4)
+      │        │
+      │        ├── View Generated Report → Dashboard
+      │        │
+      │        └── Assign Interviewer
+      │
+      └── Interviewer Login
+               ↓
+        Interview Dashboard
+               ↓
+        View Assigned Reports
+
+
+---
+
+13. Important Clarification You Mentioned
+
+You were correct about this distinction:
+
+Two separate data layers exist
+
+Canonical JSON
+
+Used for:
+
+Screen 1
+Screen 2
+
+Structured data extracted from resume.
+
+
+---
+
+LLM Report JSON
+
+Used for:
+
+Screen 3
+Screen 4
+Suggested Questions
+
+Generated analysis.
+
+
+---
+
+14. Why Your Architecture Is Actually Good
+
+You are already following a clean pipeline architecture:
+
+PDF
+  ↓
+Parsing
+  ↓
+Canonical JSON
+  ↓
+LLM Analysis
+  ↓
+Report DB
+  ↓
+Admin / Interviewer UI
+
+So your intuition is correct.
+
+You do not need major design changes.
+You only need to ensure:
+
+routing works
+
+database updates correctly
+
+UI pulls correct JSON fields
+
+
