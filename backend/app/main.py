@@ -9,16 +9,13 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.config import CLEANUP_INTERVAL_MINUTES
 from app.file_manager import cleanup_expired_jobs, ensure_tmp_base
 from app.routes import router
-
-# Create limiter
-limiter = Limiter(key_func=get_remote_address)
+from app.core.limiter import limiter
 
 logger = logging.getLogger("docforge.main")
 scheduler = BackgroundScheduler()

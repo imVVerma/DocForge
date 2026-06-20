@@ -16,7 +16,7 @@ from app.config import MAX_UPLOAD_FILES
 from app.file_manager import cleanup_job, create_job_dirs, save_uploads
 from app.job_store import JobStatus, store
 from app.schemas import CleanupResponse, ErrorResponse, JobCreatedResponse
-from app.main import limiter
+from app.core.limiter import limiter
 
 logger = logging.getLogger("docforge.upload")
 
