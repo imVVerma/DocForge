@@ -173,6 +173,9 @@ export async function runOcr(
 // ------------------------------------------------------------------ //
 
 export function getDownloadUrl(jobId: string): string {
+  if (BASE_URL) {
+    return `${BASE_URL.replace(/\/$/, "")}/api/download/${jobId}`;
+  }
   return `/api/download/${jobId}`;
 }
 
