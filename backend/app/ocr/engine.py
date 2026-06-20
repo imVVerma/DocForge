@@ -171,12 +171,29 @@ def ocr_pdf_file(
         from pdf2image import convert_from_path
         from pdf2image.exceptions import PDFInfoNotInstalledError
 
+        results: list[PageResult] = []
         try:
-            images = convert_from_path(
-                str(input_file),
-                dpi=200,          # 200 dpi is sufficient for OCR, keeps memory reasonable
-                fmt="png",
-            )
+            with tempfile.TemporaryDirectory() as td:
+                image_paths = convert_from_path(
+                    str(input_file),
+                    dpi=200,          # 200 dpi is sufficient for OCR, keeps memory reasonable
+                    fmt="png",
+                    output_folder=td,
+                    paths_only=True,
+                )
+
+                if not image_paths:
+                    raise RuntimeError(
+                        f"Could not extract any pages from '{input_file.name}'. "
+                        "The PDF may be empty or corrupted."
+                    )
+
+                for i, path in enumerate(image_paths, start=1):
+                    with Image.open(path) as image:
+                        result = _ocr_image(image, lang, page_number=i)
+                        results.append(result)
+
+            return results
         except PDFInfoNotInstalledError as exc:
             raise RuntimeError(
                 "poppler is not installed or not on PATH. "
@@ -188,19 +205,6 @@ def ocr_pdf_file(
         raise RuntimeError(
             "pdf2image is not installed. Run: pip install pdf2image"
         ) from exc
-
-    if not images:
-        raise RuntimeError(
-            f"Could not extract any pages from '{input_file.name}'. "
-            "The PDF may be empty or corrupted."
-        )
-
-    results: list[PageResult] = []
-    for i, image in enumerate(images, start=1):
-        result = _ocr_image(image, lang, page_number=i)
-        results.append(result)
-
-    return results
 
 
 # ------------------------------------------------------------------ #
