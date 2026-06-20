@@ -1,4 +1,4 @@
-﻿# DocForge â€” Master Build Document
+# DocForge â€” Master Build Document
 > Document Intelligence Platform: Merge Â· Compress Â· OCR Â· Convert
 > Version: 1.0 | Status: Planning | Last Updated: June 2026
 
@@ -538,17 +538,17 @@ After completing each implementation step, verify:
 ### Phase 3 â€” Compress
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 3.1a | PDF compress via ghostscript | â¬œ Not started | |
-| 3.1b | DOCX image compress | â¬œ Not started | |
-| 3.2a | Compress page (frontend) | â¬œ Not started | |
+| 3.1a | PDF compress via ghostscript | ✅ Done | |
+| 3.1b | DOCX image compress | ✅ Done | |
+| 3.2a | Compress page (frontend) | ✅ Done | |
 
 ### Phase 4 â€” OCR
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 4.1a | Image OCR (pytesseract) | â¬œ Not started | |
-| 4.1b | PDF OCR (pdf2image + tesseract) | â¬œ Not started | |
-| 4.1c | Searchable PDF output | â¬œ Not started | |
-| 4.2a | OCR page (frontend) | â¬œ Not started | |
+| 4.1a | Image OCR (pytesseract) | ✅ Done | |
+| 4.1b | PDF OCR (pdf2image + tesseract) | ✅ Done | |
+| 4.1c | Searchable PDF output | ✅ Done | |
+| 4.2a | OCR page (frontend) | ✅ Done | |
 
 ### Phase 5 â€” Polish + Deploy
 | # | Task | Status | Notes |
@@ -561,9 +561,8 @@ After completing each implementation step, verify:
 
 ---
 
-**Status Legend:** â¬œ Not started Â· ðŸ”„ In progress Â· âœ… Done Â· âŒ Blocked
+**Status Legend:** â¬œ Not started Â· ðŸ”„ In progress Â· âœ… Done Â· â Œ Blocked
 
 ---
 
 *DocForge Master Build Document â€” keep this file updated as the single source of truth.*
-

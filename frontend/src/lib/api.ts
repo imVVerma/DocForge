@@ -45,6 +45,36 @@ export interface MergeResponse {
   };
 }
 
+export interface CompressResponse {
+  job_id: string;
+  status: string;
+  download_url: string;
+  output_size: number;
+  metadata: {
+    output_filename: string;
+    original_size: number;
+    output_size: number;
+    reduction_pct: number;
+    quality: string;
+  };
+}
+
+export interface OcrResponse {
+  job_id: string;
+  status: string;
+  download_url: string;
+  output_size: number;
+  metadata: {
+    output_filename: string;
+    page_count: number;
+    confidence_scores: number[];
+    mean_confidence: number;
+    language: string;
+    output_format: string;
+    text_preview: string;
+  };
+}
+
 export interface ApiError {
   detail: string;
 }
@@ -101,6 +131,40 @@ export async function mergeFiles(
   form.append("ordered_filenames", orderedFilenames.join(","));
 
   const { data } = await client.post<MergeResponse>("/api/merge", form);
+  return data;
+}
+
+// ------------------------------------------------------------------ //
+// Compress
+// ------------------------------------------------------------------ //
+
+export async function compressFile(
+  jobId: string,
+  quality: "low" | "medium" | "high"
+): Promise<CompressResponse> {
+  const form = new FormData();
+  form.append("job_id", jobId);
+  form.append("quality", quality);
+
+  const { data } = await client.post<CompressResponse>("/api/compress", form);
+  return data;
+}
+
+// ------------------------------------------------------------------ //
+// OCR
+// ------------------------------------------------------------------ //
+
+export async function runOcr(
+  jobId: string,
+  outputFormat: "txt" | "md" | "pdf",
+  language: "eng" | "hin" | "auto"
+): Promise<OcrResponse> {
+  const form = new FormData();
+  form.append("job_id", jobId);
+  form.append("output_format", outputFormat);
+  form.append("language", language);
+
+  const { data } = await client.post<OcrResponse>("/api/ocr", form);
   return data;
 }
 

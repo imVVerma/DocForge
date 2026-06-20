@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = [
+  "ghostscript",
+  "tesseract",
+  "tesseract-data-eng",
+  "tesseract-data-hin",
+  "poppler_utils",
+  "libreoffice",
+  "pandoc",
+  "python311",
+]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
+
+[start]
+cmd = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"

@@ -10,12 +10,13 @@ import logging
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, HTTPException, UploadFile, Request
 
 from app.config import MAX_UPLOAD_FILES
 from app.file_manager import cleanup_job, create_job_dirs, save_uploads
 from app.job_store import JobStatus, store
 from app.schemas import CleanupResponse, ErrorResponse, JobCreatedResponse
+from app.main import limiter
 
 logger = logging.getLogger("docforge.upload")
 
@@ -27,7 +28,9 @@ router = APIRouter(prefix="/api", tags=["upload"])
     response_model=JobCreatedResponse,
     responses={400: {"model": ErrorResponse}},
 )
+@limiter.limit("20/minute")
 async def upload_files(
+    request: Request,
     files: Annotated[list[UploadFile], File(description="1-20 document files")],
 ) -> JobCreatedResponse:
     """Stage files for processing and return a job id."""
